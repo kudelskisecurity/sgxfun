@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,25 +20,16 @@ from binascii import hexlify
 from struct import unpack
 import sys
 
-"""
-TODO:
-* optimize display (show labels in same way as official doc:
-  capitalization etc.)
-* add disclaimer
-* pylint
-"""
-
-def to_int(x):
-    pass
 
 def rsa_check(n, s, q1, q2):
-    qq1 = s**2 / n
+    qq1 = s**2 // n
     if qq1 != q1:
         return False
-    qq2 = (s**3 - q1*s*n) / n
+    qq2 = (s**3 - q1*s*n) // n
     if qq2 != q2:
         return False
     return True
+
 
 class Parser(object):
     def __init__(self, filename):
@@ -55,8 +47,8 @@ class Parser(object):
         return None
 
     def find_sigstruct_header(self):
-        sigstruct_header = "\x06\x00\x00\x00\xe1\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00"
-        sigstruct_header2 = "\x01\x01\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x01\x00\x00\x00"
+        sigstruct_header = b"\x06\x00\x00\x00\xe1\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00"
+        sigstruct_header2 = b"\x01\x01\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x01\x00\x00\x00"
         # find the first header
         pos = self.blob.find(sigstruct_header)
         if pos != -1:
@@ -268,9 +260,8 @@ class Parser(object):
 
     def get_vaddr(self, raddr):
         for section in self.get_sections():
-            if raddr >= section['raddr'] and \
-               raddr < section['raddr'] + section['rsize']:
-                   return raddr - section['raddr'] + section['vaddr']
+            if raddr >= section['raddr'] and raddr < section['raddr'] + section['rsize']:
+                return raddr - section['raddr'] + section['vaddr']
         return None
 
     def get_raddr(self, vaddr):
@@ -344,9 +335,10 @@ class Parser(object):
         q2 = int(hexlify(q2bytes), 16)
 
         if rsa_check(n, s, q1, q2):
-            print("RSA parameters valid")
+            print('RSA parameters valid')
         else:
-            print("RSA parameters INVALID")
+            print('RSA parameters invalid')
+        print('')
 
         values.append(('q1', q1))
         values.append(('q2', q2))
@@ -372,22 +364,22 @@ class Parser(object):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print 'usage: %s <enclave.signed.dll>' % sys.argv[0]
+        print('usage: %s <enclave.signed.dll>' % sys.argv[0])
         sys.exit(1)
 
     fname = sys.argv[1]
     p = Parser(fname)
 
-    print 'enclave file:', fname
-    print 'enclave size:', p.size()
-    sigstruct_pos=p.find_sigstruct_header()
+    print('Enclave file: %s' % fname)
+    print('Enclave size: %d bytes' % p.size())
+    sigstruct_pos = p.find_sigstruct_header()
     if sigstruct_pos:
-        print 'sigstruct found at %s' % hex(sigstruct_pos)
+        print('SIGSTRUCT found at %s' % hex(sigstruct_pos))
     else:
-        print 'sigstruct not found. trying with weak header'
+        print('SIGSTRUCT not found. trying with weak header')
         sigstruct_pos = p.find_weak_sigstruct_header()
         if sigstruct_pos:
-            print 'weak sigstruct found at 0x%s' % hex(sigstruct_pos)
+            print('Weak sigstruct found at 0x%s' % hex(sigstruct_pos))
         else:
             sys.exit(1)
 
@@ -395,28 +387,28 @@ if __name__ == "__main__":
     # print sigstruct
     for k, v in sigstruct:
         if isinstance(v, (long, int)):
-            print("%s: %d" % (k.upper(), v))
+            print("%20s\t%d" % (k.upper(), v))
         else:
-            print("%s: %s" % (k.upper(), hexlify(v)))
+            print("%20s\t%s" % (k.upper(), hexlify(v)))
 
-    print "\n"
-    print "# SECS.ATTRIBUTES\n"
+    print('\n')
+    print('# SECS.ATTRIBUTES\n')
     attrs = p.attributes(sigstruct[12][1])
     # print attributes
-    print 'DEBUG:', attrs[1][1]
-    print 'MODE64BIT:', attrs[2][1]
-    print 'PROVISIONKEY:', attrs[4][1]
-    print 'EINITTOKENKEY:', attrs[5][1]
+    print('%20s\t%d' % ('DEBUG', attrs[1][1]))
+    print('%20s\t%d' % ('MODE64BIT', attrs[2][1]))
+    print('%20s\t%d' % ('PROVISIONKEY', attrs[4][1]))
+    print('%20s\t%d' % ('EINITTOKEN', attrs[5][1]))
 
     # now, let's parse sgxmeta section
     sgxmeta_pos = p.find_sgxmeta_header()
     sgxmeta = p.sgxmeta(sgxmeta_pos)
-    print '\n# sgxmeta found at 0x%s\n' % hex(sgxmeta_pos)
+    print('\n# sgxmeta found at 0x%s\n' % hex(sgxmeta_pos))
     for k, v in sgxmeta:
-        if isinstance(v, int):
-            print "%s: %d" % (k.upper(), v)
+        if isinstance(v, (long, int)):
+            print('%20s\t%d' % (k.upper(), v))
         else:
-            print "%s: %s" % (k.upper(), hexlify(v))
+            print('%20s\t%s' % (k.upper(), hexlify(v)))
 
     # locating ECALLs table
     epos = p.find_ecall_table()
@@ -427,11 +419,12 @@ if __name__ == "__main__":
     #   va = 0x180067080
     #   .rdata vaddr=0x180066000 paddr=0x000064a00
     #   epos = 0x180067080-0x180066000+0x64a00
-    print '\nECALLs table found at 0x%x' % epos
+    print('\nECALLs table found at 0x%x' % epos)
     necalls, = unpack("<I", p.blob[epos:epos+4])
     # extract ecall table
     ecalls = p.ecalls_table(epos)
     # parse ecalls table
     for i in range(len(ecalls)):
-        print 'ECALL#%02d\tvaddr: 0x%x' % (i, ecalls[i]['vaddr'])
+        print('%20d\tvaddr: 0x%x' % (i, ecalls[i]['vaddr']))
+
 
