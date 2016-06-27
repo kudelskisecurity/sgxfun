@@ -1,8 +1,10 @@
 # sgxfun
 
+Python2 utility to extract metadata from Intel SGX enclaves.
+
 ## Usage
 
-TODO
+`python sgxfun.py enclave.signed`
 
 ## Intellectual property
 
