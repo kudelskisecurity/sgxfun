@@ -24,7 +24,7 @@ import sys
 EXPECTED_LEN = 1116
 
 """
-as per linux-sgx/common/inc/sgx_quote'.h's 
+as per linux-sgx/common/inc/sgx_quote.h's 
 
 typedef struct _quote_t
 {
