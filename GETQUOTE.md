@@ -77,7 +77,9 @@ Note that the revocation information here is not authenticated.
 
 Two SHA-256 are computed:
 
-* `SHA-256(nonce(16) || quote_t(436) || IV(16) || len(c1||c2||c3)+16(4) || c1 || c2 || c3)`
+* `SHA-256(nonce(16) || quote_t(436) || IV(16) || len(c1||c2||c3)+16(4)
+  || c1 || c2 || c3)`, used a report data in the subsequent report
+  generation
 
 * `SHA-256(sig_rl(variable))`, whose ECDSA signature is verified using
   the public key available
