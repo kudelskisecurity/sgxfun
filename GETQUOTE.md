@@ -26,7 +26,7 @@ revocation list is empty.
 Given a group key, private key (sealed), and a signature revocation
 list, generate a `quote_t` structure, including an EPID signature:
 
-``
+```
 typedef struct _quote_t
 {
     uint16_t            version;        /* 0   */
@@ -39,12 +39,12 @@ typedef struct _quote_t
     uint32_t            signature_len;  /* 432 */
     uint8_t             signature[];    /* 436 */
 } sgx_quote_t;
-``
+```
 
 where the `signature[]` is the actual EPID signature, composed of
 several elements:
 
-``
+```
 typedef struct EpidSignature {
   BasicSignature sigma0;  ///< basic signature (GCM'd in a quote)
   OctStr32 rl_ver;        ///< revocation list version number (4)
@@ -52,7 +52,7 @@ typedef struct EpidSignature {
   NRProof sigma[1];       ///< array of non-revoked proofs (flexible array)
 } EPIDSignature;
 
-``
+```
 
 The actual quote, however, will contain more data than the `436+signature_len` bytes defined in the `quote_t` structure.
 
