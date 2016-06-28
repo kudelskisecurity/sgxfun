@@ -52,6 +52,10 @@ and as per libsgx_qe.signed.so
 
 """
 
+EXPECTED_QUOTELEN = 1116
+EXPECTED_SIGLEN = 680
+EXPECTED_SIGENCLEN = 360
+
 def xlf(s):
     return hexlify(s).decode('utf-8')
 
@@ -63,9 +67,9 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'rb') as f:
         data = f.read()
 
-    if len(data) != 1116: 
-        print('Invalid enclave length (%d instead of %d)' % (len(data),\
-            EXPECTED_LEN))
+    if len(data) != EXPECTED_LEN: 
+        print('Unexpected quote length (%d vs %d)' % (len(data),\
+            EXPECTED_QUOTELEN))
 
     version = struct.unpack('<H',data[:2])[0]
     sign_type = struct.unpack('<H', data[2:4])[0]
@@ -75,13 +79,17 @@ if __name__ == "__main__":
     basename = data[16:48]
     report = data[48:432]
     siglen = struct.unpack('<I', data[432:436])[0]
+    if siglen != EXPECTED_SIGLEN:
+        print('Unexpected siglen (%d vs. %d)' % (sigenclen,\
+            EXPECTED_SIGLEN))
 
     rsaenc = data[436:724]
     iv = data[724:736]
     sigenclen = struct.unpack('<I', data[736:740])[0]
     # check clen
-    if sigenclen > 360:
-        print('Invalid ciphertext len (%d vs. max 336)' % sigenclen)
+    if sigenclen != EXPECTED_SIGENCLEN:
+        print('Unexpected sigenclen (%d vs. %s)' % (sigenclen,\
+            EXPECTED_SIGENCLEN))
     sigenc = data[740:740+sigenclen]
     tag = data[740+sigenclen:740+sigenclen+16]
     rl_verenc = data[1092:1096]
