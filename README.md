@@ -1,15 +1,17 @@
 # sgxfun
 
-Python2 utility to extract metadata from Intel SGX enclaves.
+Utilities and documentation for Intel SGX.
 
-## Usage
+## `parse_enclave.py`
 
-`python sgxfun.py enclave.signed`
+## `parse_quote.py`
+
+## `GETQUOTE.md`
 
 ## Intellectual property
 
 Copyright (c) 2016, Nagravision S.A.
 
-GPLv3
+Code under GPLv3
 
 
