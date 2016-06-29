@@ -209,12 +209,6 @@ class Parser(object):
             ecalls.append({'vaddr': vaddr})
         return ecalls
 
-    # def num_ocalls(self):
-    #     # number of ocalls is located after ecall_table
-    #     ecall_table_pos = self.find_ecall_table()
-    #     # skip to it and unpack uint
-    #     if self.get_arch() == 32:
-    #         ocall_pos = ecall_table_pos + 4 + len(
 
     def is_pe(self):
         # 1. Get PE signature offset (at 0xE0)
