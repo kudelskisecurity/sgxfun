@@ -54,7 +54,7 @@ and as per libsgx_qe.signed.so
 
 EXPECTED_QUOTELEN = 1116
 EXPECTED_SIGLEN = 680
-EXPECTED_SIGENCLEN = 360
+EXPECTED_ENCLEN = 360
 
 def xlf(s):
     return hexlify(s).decode('utf-8')
@@ -80,20 +80,21 @@ if __name__ == "__main__":
     report = data[48:432]
     siglen = struct.unpack('<I', data[432:436])[0]
     if siglen != EXPECTED_SIGLEN:
-        print('Unexpected siglen (%d vs. %d)' % (sigenclen,\
+        print('Unexpected siglen (%d vs. %d)' % (siglen,\
             EXPECTED_SIGLEN))
 
-    rsaenc = data[436:724]
+    rsaenc = data[436:692]
+    keyhash = data[692:724]
     iv = data[724:736]
-    sigenclen = struct.unpack('<I', data[736:740])[0]
+    enclen = struct.unpack('<I', data[736:740])[0]
     # check clen
-    if sigenclen != EXPECTED_SIGENCLEN:
-        print('Unexpected sigenclen (%d vs. %s)' % (sigenclen,\
-            EXPECTED_SIGENCLEN))
-    sigenc = data[740:740+sigenclen]
-    tag = data[740+sigenclen:740+sigenclen+16]
+    if enclen != EXPECTED_ENCLEN:
+        print('Unexpected enclen (%d vs. %s), is RL non-empty?' % (enclen,\
+            EXPECTED_ENCLEN))
+    sigenc = data[740:1092]
     rl_verenc = data[1092:1096]
     n2enc = data[1096:1100]
+    tag = data[1100:1116]
 
     s= \
         '%20s\t%d\n' % ('version', version) +\
@@ -105,12 +106,13 @@ if __name__ == "__main__":
         '%20s\t%s\n' % ('report', xlf(report)) +\
         '%20s\t%d\n' % ('siglen', siglen) +\
         '%20s\t%s\n' % ('rsaenc', xlf(rsaenc)) +\
+        '%20s\t%s\n' % ('keyhash', xlf(keyhash)) +\
         '%20s\t%s\n' % ('iv', xlf(iv)) +\
-        '%20s\t%d\n' % ('sigenclen', sigenclen) +\
+        '%20s\t%d\n' % ('enclen', enclen) +\
         '%20s\t%s\n' % ('sigenc', xlf(sigenc)) +\
-        '%20s\t%s\n' % ('tag', xlf(tag)) +\
         '%20s\t%s\n' % ('rl_verenc', xlf(rl_verenc)) +\
-        '%20s\t%s\n' % ('n2enc', xlf(n2enc))
+        '%20s\t%s\n' % ('n2enc', xlf(n2enc)) +\
+        '%20s\t%s\n' % ('tag', xlf(tag))
 
     print(s)
     
