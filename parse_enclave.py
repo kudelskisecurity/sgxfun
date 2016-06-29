@@ -20,6 +20,8 @@ from binascii import hexlify
 from struct import unpack
 import sys
 
+from elftools.elf.elffile import ELFFile
+
 
 def rsa_check(n, s, q1, q2):
     qq1 = s**2 // n
@@ -33,6 +35,8 @@ def rsa_check(n, s, q1, q2):
 
 class Parser(object):
     def __init__(self, filename):
+        # we need to pass a stream to ELFFile
+        self.filename = filename
         try:
             self.blob = open(filename, 'rb').read()
         except IOError as e:
@@ -142,11 +146,40 @@ class Parser(object):
                 return self.get_raddr(tvaddr)
         return None
 
+    # as found in linux enclaves
+    def find_ecalls_elf(self):
+        t_section = None
+        t_vaddr = None
+        elf = ELFFile(open(self.filename, 'rb')) 
+        # find the symbols table(s)
+        for section in elf.iter_sections():
+            if section.header['sh_type'] == 'SHT_SYMTAB':
+                # find the g_ecall_table symbol
+                for symbol in section.iter_symbols():
+                    if symbol.name == 'g_ecall_table':
+                        t_section=symbol.entry['st_shndx']
+                        t_vaddr=symbol.entry['st_value']
+                        break
+            if t_section and t_vaddr:
+                break
+
+        if t_section and t_vaddr:
+            # we got it, go calculate the table address 
+            section = elf.get_section(t_section)
+            # calculate the symbol offset from the section start
+            sym_offset = t_vaddr - section.header['sh_addr']
+            # return the physical address of the symbol
+            return section.header['sh_offset'] + sym_offset
+
+        return None
+            
+
     def find_ecall_table(self):
         heuristics = [
             self.find_ecalls_offset,
             self.find_ecalls_prerelease,
-            self.find_ecalls_debug
+            self.find_ecalls_debug,
+            self.find_ecalls_elf
         ]
 
         for h in heuristics:
@@ -183,8 +216,21 @@ class Parser(object):
     #     if self.get_arch() == 32:
     #         ocall_pos = ecall_table_pos + 4 + len(
 
+    def is_pe(self):
+        # 1. Get PE signature offset (at 0xE0)
+        sigpos, = unpack("<I", self.blob[0x3c:0x40])
+        # check if the signature 'PE\0\0' is there
+        return self.blob[sigpos:sigpos+4] == 'PE\0\0'
 
-    def get_arch(self):
+    def get_arch_elf(self):
+        bits = None
+        if self.blob[0x4] == '\x01':
+            bits = 32
+        elif self.blob[0x4] == '\x02':
+            bits = 64
+        return bits 
+
+    def get_arch_pe(self):
         bits = None
         # PE file format parsing!
         # 1. Get PE signature offset (at 0xE0)
@@ -200,6 +246,13 @@ class Parser(object):
         elif magic == 0x20b:  # pe32+
             bits = 64
         return bits
+
+    def get_arch(self):
+        if self.is_pe():
+            return self.get_arch_pe()
+        else:
+            return self.get_arch_elf()
+        return None
 
 
     def get_base(self):
