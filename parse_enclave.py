@@ -402,13 +402,16 @@ if __name__ == "__main__":
 
     # now, let's parse sgxmeta section
     sgxmeta_pos = p.find_sgxmeta_header()
-    sgxmeta = p.sgxmeta(sgxmeta_pos)
-    print('\n# sgxmeta found at 0x%s\n' % hex(sgxmeta_pos))
-    for k, v in sgxmeta:
-        if isinstance(v, (long, int)):
-            print('%20s\t%d' % (k.upper(), v))
-        else:
-            print('%20s\t%s' % (k.upper(), hexlify(v)))
+    if sgxmeta_pos:
+        sgxmeta = p.sgxmeta(sgxmeta_pos)
+        print('\n# sgxmeta found at 0x%s\n' % hex(sgxmeta_pos))
+        for k, v in sgxmeta:
+            if isinstance(v, (long, int)):
+                print('%20s\t%d' % (k.upper(), v))
+            else:
+                print('%20s\t%s' % (k.upper(), hexlify(v)))
+    else:
+        print('\n# sgxmeta not found')
 
     # locating ECALLs table
     epos = p.find_ecall_table()
@@ -419,12 +422,15 @@ if __name__ == "__main__":
     #   va = 0x180067080
     #   .rdata vaddr=0x180066000 paddr=0x000064a00
     #   epos = 0x180067080-0x180066000+0x64a00
-    print('\nECALLs table found at 0x%x' % epos)
-    necalls, = unpack("<I", p.blob[epos:epos+4])
-    # extract ecall table
-    ecalls = p.ecalls_table(epos)
-    # parse ecalls table
-    for i in range(len(ecalls)):
-        print('%20d\tvaddr: 0x%x' % (i, ecalls[i]['vaddr']))
+    if epos:
+        print('\n# ECALLs table found at 0x%x' % epos)
+        necalls, = unpack("<I", p.blob[epos:epos+4])
+        # extract ecall table
+        ecalls = p.ecalls_table(epos)
+        # parse ecalls table
+        for i in range(len(ecalls)):
+            print('%20d\tvaddr: 0x%x' % (i, ecalls[i]['vaddr']))
+    else:
+        print('\n# ECALLs table not found')
 
 
