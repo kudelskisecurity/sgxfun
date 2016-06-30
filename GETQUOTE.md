@@ -118,8 +118,8 @@ With hex offsets, and data byte size:
 [end of quote_t struct]
 ```
 
-If the revocation list is not empty, each 160-byte non-revocation proof
-is AES-GCM encrypted and written to the quote, eventually followed by
+If the revocation list is not empty, each 160-byte non-revoked proof is
+AES-GCM encrypted and written to the quote, eventually followed by
 the tag of all encrypted data.
 
 Proofs follow the following structure:
