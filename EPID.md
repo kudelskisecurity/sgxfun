@@ -1,7 +1,10 @@
 # Use of EPID signatures in SGX
 
-The use of EPID within SGX is already documented in Intel's
-[EPID Provisioning and Attestation
+In SGX, EPID lets an enclave attest that it's running a given software
+(through its `MRENCLAVE` identity) on a given CPU (model, microcode
+version, etc.). The use of EPID within SGX is already documented in
+Intel's [EPID Provisioning and
+Attestation
 Services](https://software.intel.com/en-us/blogs/2016/03/09/intel-sgx-epid-provisioning-and-attestation-services)
 document, and EPID is described in detail in [Enhanced Privacy ID from
 Bilinear Pairing](https://eprint.iacr.org/2009/095).  This note
@@ -10,7 +13,7 @@ above document to best understand the following.
 
 First, a quick terminology summary:
 
-* The *issuer* (Intel) is the only party who knows the *issuing signing key*
+* The **issuer** (Intel) is the only party who knows the *issuing signing key*
   (ISK), called "Intel Signing Key" in [EPID Provisioning and
   Attestation
   Services](https://software.intel.com/en-us/blogs/2016/03/09/intel-sgx-epid-provisioning-and-attestation-services).
@@ -18,25 +21,25 @@ First, a quick terminology summary:
   certificate signed by the ISK, and verifiable using the ISK's
   associated public key (which is not the GPK).
 
-* *Members* (CPUs) join the group through an interactive protocol with the
+* **Members** (CPUs) join the group through an interactive protocol with the
   issuer, in such a way that the issuer doesn't know the *member private
-  key* SK
+  key* SK. Given a enclave's `REPORT` (which includes the `MRENCLAVE`
+  and `MRSIGNER` identities), a 
 
-* *Verifiers* are 
+* **Verifiers** are applications running the enclave (locally or
+  remotely), and that will verify that a given `MRENCLAVE` runs on a
+  given TCB.
 
-In SGX, EPID lets a CPU sign 
+Some important features of EPID in SGX are:
 
-Some important features of SGX are that
+* **Anonymity**: When a group member issues a signature, no one can identify the member
+  given the signature, even the issuer. The goal is to prevent the
+  tracking of users through their CPUs.
 
-* When a group member issues a signature, no one can identify the member
-  given the signature, even the 
+* **(Un)linkability**:
 
-## Why EPID in SGX?
+* **Revocation**:
 
-Issuer: Intel, 
-Group: group of CPUs with same TCB and QE 
-Member: CPU
-Verifier: user
 
 ## How's EPID implemented in SGX?
 
@@ -97,6 +100,10 @@ const uint8_t g_sgx_isk_pubkey_y[] = {
 
 QE gets the private key from the Provisioning Enclave
 
+Math details
+
+* type of curve and implementation
+* type of proofs
 
 ## How secure is it?
 
