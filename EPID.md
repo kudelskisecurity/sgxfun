@@ -32,23 +32,39 @@ First, a quick terminology summary:
 
 Some important features of EPID in SGX are:
 
-* **Anonymity**: When a group member issues a signature, no one can identify the member
-  given the signature, even the issuer. The goal is to prevent the
-  tracking of users through their CPUs.
+* **Anonymity**: When a group member issues a signature, no one can
+  identify the member given the signature, even the issuer. The goal is
+  to prevent the tracking of users through their CPUs.
 
-* **(Un)linkability**:
-
-* **Revocation**:
+* **(Un)linkability**: Members have the choice to make signatures either
+  linkable or unlinkable. With linkable signatures, there'll be a way 
 
 
 ## How's EPID implemented in SGX?
 
-In quoting enclave, `get_quote()`
+A large part of the EPID implementation is found in the quoting enclave
+(QE), which EPID-signs a report and creates a `QUOTE` that includes this
+signature. The QE binary exposes the following EPID member functions:
 
-QE also exposes other member functions:
+* `epidMember_create`
+* `epidMember_createCompressed`
+* `epidMember_delete`
+* `epidMember_registerBaseName`
+* `epidMember_computePreSignature`
+* `epidMember_join`
+* `epidMember_isPrivKeyValid`
+* `epidMember_signMessagePartial`
+* `epidMember_checkSigRLHeader`
+* `epidMember_nrProve`
+* `epidMember_signMessage`
 
-Group key certificate, including the group key and a signature by
-Intel's issuing signing key (ISK):
+Specifically, the `get_quote` function in `sgx_get_quote` calls
+`epidMember_signMessagePartial` to sign a report and
+`epidMember_nrProve` to generate non-revoked proofs.
+
+The Linux platform software uses the following group key certificate,
+including the group key and a signature by Intel's ISK, as found in
+<https://github.com/01org/linux-sgx/blob/9441de4c38700bbc573bb0d363c34387022b7b1c/sdk/simulation/uae_service_sim/quoting_sim.cpp>:
 
 ```
 static const uint8_t EPID_GROUP_CERT[] = {
@@ -76,10 +92,10 @@ static const uint8_t EPID_GROUP_CERT[] = {
     0x83, 0x7D, 0x3E, 0x31, 0xEE, 0x11, 0x40, 0xA9
 };
 ```
-From
-https://github.com/01org/linux-sgx/blob/9441de4c38700bbc573bb0d363c34387022b7b1c/sdk/simulation/uae_service_sim/quoting_sim.cpp
 
-The public key of the ISK 
+The public key of the ISK, used to verify a signature, can be found in
+<https://github.com/01org/linux-sgx/blob/master/psw/ae/data/constants/linux/isk_pub.hh>:
+
 ```
 /* This is the x component of production public key used for EC-DSA verify for EPID Signing key. */
 const uint8_t g_sgx_isk_pubkey_x[] = {
@@ -98,12 +114,19 @@ const uint8_t g_sgx_isk_pubkey_y[] = {
 };
 ```
 
-QE gets the private key from the Provisioning Enclave
+To sign a `QUOTE`, the QE gets the ISK private key via the provisioning
+enclave.
 
-Math details
+As specified in [Enhanced Privacy ID from Bilinear
+Pairing](https://eprint.iacr.org/2009/095), EPID relies on bilinear
+pairings to achieve the anonymous group signature functionality. In SGX,
+it does so using *optimal Ate pairings*, a kind of pairing that
+minimizes the number of iterations of the Miller loop, the main
+component of a pairing computation. 
+
+SGX computes pairings over elliptic curves, specifically Barreto-Naehrig
+curves, along the lines of <http://eprint.iacr.org/2010/354>.
+
 
 * type of curve and implementation
 * type of proofs
-
-## How secure is it?
-
