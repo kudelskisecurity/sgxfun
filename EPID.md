@@ -127,6 +127,3 @@ component of a pairing computation.
 SGX computes pairings over elliptic curves, specifically Barreto-Naehrig
 curves, along the lines of <http://eprint.iacr.org/2010/354>.
 
-
-* type of curve and implementation
-* type of proofs
