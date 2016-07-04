@@ -23,8 +23,10 @@ First, a quick terminology summary:
 
 * **Members** (CPUs) join the group through an interactive protocol with the
   issuer, in such a way that the issuer doesn't know the *member private
-  key* SK. Given a enclave's `REPORT` (which includes the `MRENCLAVE`
-  and `MRSIGNER` identities), a 
+  key* SK. Given a enclave's `REPORT` (a measurement that includes the
+  `MRENCLAVE` and `MRSIGNER` identities), a member creates a `QUOTE`
+   that includes an EPID signature of the `REPORT`. The `QUOTE` acts as
+   an attestation that the enclave does run on a trusted SGX platform.
 
 * **Verifiers** are applications running the enclave (locally or
   remotely), and that will verify that a given `MRENCLAVE` runs on a
