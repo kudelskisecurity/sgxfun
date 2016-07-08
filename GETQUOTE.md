@@ -31,19 +31,21 @@ list, generate a `quote_t` structure, including an EPID signature:
 ```
 typedef struct _quote_t
 {
-    uint16_t            version;        /* 0   */
-    uint16_t            sign_type;      /* 2   */
-    sgx_epid_group_id_t epid_group_id;  /* 4   */
-    sgx_isv_svn_t       qe_svn;         /* 8   */
-    uint8_t             reserved[6];    /* 10  */
-    sgx_basename_t      basename;       /* 16  */
-    sgx_report_body_t   report_body;    /* 48  */
-    uint32_t            signature_len;  /* 432 */
-    uint8_t             signature[];    /* 436 */
+    uint16_t            version;      /* 0   version of the structure */
+    uint16_t            sign_type;    /* 2   linkable or unlinkable */
+    sgx_epid_group_id_t epid_group_id;/* 4   EPID group ID */
+    sgx_isv_svn_t       qe_svn;       /* 8   SVN */
+    uint8_t             reserved[6];  /* 10  for alignment */
+    sgx_basename_t      basename;     /* 16  quote base name */
+    sgx_report_body_t   report_body;  /* 48  */
+    uint32_t            signature_len;/* 432 */
+    uint8_t             signature[];  /* 436 */
 } sgx_quote_t;
 ```
 
-where the `signature[]` is the actual EPID signature, composed of
+The `sgx_quote_t` structure is described in the SDK documentation.
+The `signature[]` is the actual EPID signature, composed of
+
 several elements:
 
 ```
