@@ -7,6 +7,8 @@ Utilities and documentation for Intel SGX.
 
 * `parse_quote.py` takes a quote in binary form and extracts its fields
 
+* `EPID.md` documents the used of EPID anonymous group signatures
+
 * `GETQUOTE.md` documents the quote format and cryptographic scheme
   behind, as implemented in the quoting enclave
 
