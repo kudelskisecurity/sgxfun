@@ -86,8 +86,11 @@ class Parser(object):
             pos = self.blob.find(ecalls_magic, pos+4)
             if pos == -1:
                 break
+            # skip danger zone
+            pos += 16
             # find mov opcode in next 32 bytes (488b15xxxxxxxx)
-            movpos = self.blob.find("\x48\x8b\x15", pos, pos+32)
+            # movpos = self.blob.find("\x48\x8b\x15", pos, pos+32)
+            movpos = self.blob.find("\x48\x8b", pos, pos+32)
             # we have a match!
             if movpos != -1:
                 # extract address offset from mov opcode
