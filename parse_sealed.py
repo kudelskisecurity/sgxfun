@@ -87,7 +87,7 @@ class KeyRequest(object):
     def __init__(self, data):
         self.key_name, = unpack('<H', data[0:2])
         self.key_policy, = unpack('<H', data[2:4])
-        self.isv_svn = unpack('<H', data[4:6])
+        self.isv_svn, = unpack('<H', data[4:6])
         self.reserved1 = data[6:8]
         self.cpu_svn = data[8:24]
         self.attribute_mask = data[24:40]
@@ -109,20 +109,18 @@ if __name__ == '__main__':
     aesgcm_data = AESGCMData(sealed_data.aes_data)
 
     print '\n### key request ###\n' \
-        'key name: %d (%s)\n' % (key_request.key_name,
+        '%20s\t%d (%s)\n' % ('key_request', key_request.key_name,
                      KEY_NAME[key_request.key_name]) +\
-        'key policy: %d (%s)\n' % (key_request.key_policy,
+        '%20s\t%d (%s)\n' % ('key_policy', key_request.key_policy,
                        KEY_POLICY[key_request.key_policy]) +\
-        'isv svn: %d\n' % (key_request.isv_svn) +\
-        'cpu svn: %s\n' % (hexlify(key_request.cpu_svn)) +\
-        'attribute mask: %s\n' % (hexlify(key_request.attribute_mask)) +\
-        'key id: %s\n' % hexlify(key_request.key_id) +\
-        'misc mask: %s\n' % hexlify(key_request.misc_mask) +\
+        '%20s\t%d\n' % ('isv_svn', key_request.isv_svn) +\
+        '%20s\t%s\n' % ('cpu_svn', hexlify(key_request.cpu_svn)) +\
+        '%20s\t%s\n' % ('attribute_mask', hexlify(key_request.attribute_mask)) +\
+        '%20s\t%s\n' % ('key_id', hexlify(key_request.key_id)) +\
+        '%20s\t%s\n' % ('misc_mask', hexlify(key_request.misc_mask)) +\
         '\n### aesgcm data ###\n' +\
-        'payload size: %d bytes\n' % aesgcm_data.payload_size +\
-        'ciphertext: %d bytes. additional authenticated data (aad): %d bytes\n' % (
-        sealed_data.plain_text_offset,
-        aesgcm_data.payload_size - sealed_data.plain_text_offset) +\
-        'tag: %s\n' % hexlify(aesgcm_data.payload_tag) +\
-        'ciphertext: %s\n' % hexlify(aesgcm_data.payload[:sealed_data.plain_text_offset]) +\
-        'aad (in plaintext): %s\n' % hexlify(aesgcm_data.payload[sealed_data.plain_text_offset:])
+        '%20s\t%d bytes\n' % ('ciphertext length', sealed_data.plain_text_offset) +\
+        '%20s\t%d bytes\n' % ('aad length', aesgcm_data.payload_size - sealed_data.plain_text_offset) +\
+        '%20s\t%s\n' % ('tag', hexlify(aesgcm_data.payload_tag)) +\
+        '%20s\t%s\n' % ('ciphertext', hexlify(aesgcm_data.payload[:sealed_data.plain_text_offset])) +\
+        '%20s\t%s\n' % ('aad', hexlify(aesgcm_data.payload[sealed_data.plain_text_offset:]))
