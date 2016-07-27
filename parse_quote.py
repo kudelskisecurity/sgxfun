@@ -115,4 +115,3 @@ if __name__ == "__main__":
         '%20s\t%s\n' % ('tag', xlf(tag))
 
     print(s)
-    
