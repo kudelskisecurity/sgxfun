@@ -138,8 +138,6 @@ if __name__ == "__main__":
 
     print(r)
 
-    print bin(ord(attributes[0]))
-
     debug = ord(attributes[0])>>1&1 == 1
     mode64bit = ord(attributes[0])>>2&1 == 1
     provisionkey = ord(attributes[0])>>4&1 == 1
