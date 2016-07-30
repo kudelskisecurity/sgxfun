@@ -442,7 +442,7 @@ if __name__ == "__main__":
             print("%20s\t%s" % (k.upper(), hexlify(v)))
 
     print('\n')
-    print('# SECS.ATTRIBUTES\n')
+    print('# ATTRIBUTES\n')
     attrs = p.attributes(sigstruct[12][1])
     # print attributes
     print('%20s\t%d' % ('DEBUG', attrs[1][1]))
