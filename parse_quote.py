@@ -138,13 +138,15 @@ if __name__ == "__main__":
 
     print(r)
 
+    print bin(ord(attributes[0]))
+
     debug = ord(attributes[0])>>1&1 == 1
-    mode64bit = ord(attributes[0])>>1&2 == 1
-    provisionkey = ord(attributes[0])>>1&4 == 1
-    einittokenkey = ord(attributes[0])>>1&5 == 1
+    mode64bit = ord(attributes[0])>>2&1 == 1
+    provisionkey = ord(attributes[0])>>4&1 == 1
+    einittokenkey = ord(attributes[0])>>5&1 == 1
     attr =  '%20s\n' % ('ATTRIBUTES') +\
             '%20s\t%s\n' % ('debug', debug) +\
             '%20s\t%s\n' % ('mode64bit', mode64bit) +\
             '%20s\t%s\n' % ('provisionkey', provisionkey) +\
-            '%20s\t%s\n' % ('einittoken', einittokenkey)
+            '%20s\t%s\n' % ('einittokenkey', einittokenkey)
     print(attr)
