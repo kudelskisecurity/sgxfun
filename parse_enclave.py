@@ -186,9 +186,12 @@ class Parser(object):
         ]
 
         for h in heuristics:
-            pos = h()
-            if pos:
-                return pos
+            try:
+                pos = h()
+                if pos:
+                    return pos
+            except:
+                pass
         return None
 
 
