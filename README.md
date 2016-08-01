@@ -2,15 +2,18 @@
 
 Utilities and documentation for Intel SGX.
 
-* `parse_enclave.py` takes an enclave in binary form and extracts some
+* Our [paper](paper/) 
+
+* [parse_enclave.py](parse_enclave.py) takes an enclave in binary form and extracts some
   metadata
 
-* `parse_quote.py` takes a quote in binary form and extracts its fields
+* [parse_quote.py](parse_quote.py) takes a quote in binary form and extracts its fields
 
-* `EPID.md` documents the used of EPID anonymous group signatures
+* [parse_sealed.py](parse_sealed.py) takes a sealed blob of data and extracts its fields
 
-* `GETQUOTE.md` documents the quote format and cryptographic scheme
+* [GETQUOTE.md](GETQUOTE.md) documents the quote format and cryptographic scheme
   behind, as implemented in the quoting enclave
+
 
 ## Extracting information from an enclave
 
