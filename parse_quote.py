@@ -96,7 +96,17 @@ if __name__ == "__main__":
     n2enc = data[1096:1100]
     tag = data[1100:1116]
 
-    s= \
+    # parse report
+    cpu_svn = report[0:16]
+    misc_select = report[16:20]
+    attributes = report[48:64]
+    mr_enclave = report[64:96]
+    mr_signer = report[128:160]
+    isv_prod_id = report[256:258]
+    isv_svn = report[258:260]
+    report_data = report[320:384]
+
+    s=  '%20s\n' % ('QUOTE') +\
         '%20s\t%d\n' % ('version', version) +\
         '%20s\t%d\n' % ('sign_type', sign_type) +\
         '%20s\t%s\n' % ('epid_group_id', xlf(epid_group_id)) +\
@@ -115,4 +125,26 @@ if __name__ == "__main__":
         '%20s\t%s\n' % ('tag', xlf(tag))
 
     print(s)
-    
+
+    r=  '%20s\n' % ('REPORT') +\
+        '%20s\t%s\n' % ('cpu_svn', xlf(cpu_svn)) +\
+        '%20s\t%s\n' % ('misc_select', xlf(misc_select)) +\
+        '%20s\t%s\n' % ('attributes', xlf(attributes)) +\
+        '%20s\t%s\n' % ('mr_enclave', xlf(mr_enclave)) +\
+        '%20s\t%s\n' % ('mr_signer', xlf(mr_signer)) +\
+        '%20s\t%s\n' % ('isv_prod_id', xlf(isv_prod_id)) +\
+        '%20s\t%s\n' % ('isv_svn', xlf(isv_svn)) +\
+        '%20s\t%s\n' % ('report_data', xlf(report_data))
+
+    print(r)
+
+    debug = ord(attributes[0])>>1&1 == 1
+    mode64bit = ord(attributes[0])>>2&1 == 1
+    provisionkey = ord(attributes[0])>>4&1 == 1
+    einittokenkey = ord(attributes[0])>>5&1 == 1
+    attr =  '%20s\n' % ('ATTRIBUTES') +\
+            '%20s\t%s\n' % ('debug', debug) +\
+            '%20s\t%s\n' % ('mode64bit', mode64bit) +\
+            '%20s\t%s\n' % ('provisionkey', provisionkey) +\
+            '%20s\t%s\n' % ('einittokenkey', einittokenkey)
+    print(attr)
