@@ -1,5 +1,4 @@
-% SGX Secure Enclaves in Practice: Security and Crypto Review
-% JP Aumasson, Luis Merino — Kudelski Security
+# SGX Secure Enclaves in Practice: Security and Crypto Review
 
 Our Black Hat 2016 talk **SGX Secure Enclaves in Practice: Security and
 Crypto Review** is the first public report about the security of
@@ -20,7 +19,7 @@ documentation, on our own analysis of SGX components, and on feedback by
 Intel.
 
 
-# What's SGX?
+## What's SGX?
 
 Software Guard Extensions (SGX) is a security technology available since
 autumn 2015 in Intel CPUs that are based on the Skylake x86 microarchitecture.
@@ -45,7 +44,7 @@ complex assembly instructions, a new program model, and a bunch of
 cryptographic algorithms and protocols. And all these new components must be
 secure in order SGX' trusted computing functionality to be secure. 
 
-## A Killer Application
+### A Killer Application
 
 SGX can serve to create executable files that are
 **impossible to reverse engineer**. Although an enclave's code is not
@@ -68,7 +67,7 @@ since:
   must verify its attestation with respect to an identified vendor.
 
 
-## Under The Hood
+### Under The Hood
 
 The notion of trusted computing as realized by Intel SGX isn't new. 
 The key concepts actually date back to the 1980s. But it's the first
@@ -96,7 +95,7 @@ architecture and its implementation of trusted computing key concepts:
   mechanisms. SGX thus comes with a dedicated *memory encryption
   engine*.
 
-# SGX Security
+## SGX Security
 
 The *trusted computing base* (TCB) of SGX consists of the minimal set of
 components that need to be trusted in order to enjoy SGX' security
@@ -114,7 +113,7 @@ accident—hide weaknesses in its CPU, as there's almost no way to verify
 that a CPU's internal logic is doing what it's supposed to do. Critical
 software components, however, can partially be analyzed.
 
-## Security Guarantees
+### Security Guarantees
 
 If SGX behaves as expected, it should protect secure enclaves from any
 malicious component outside the TCB. In particular, SGX should protect
@@ -131,7 +130,7 @@ an enclave's code and data from
 * Any remote attacker that would compromise any of the above components
 
 
-## Security Limitations
+### Security Limitations
 
 Security limitations documented by Intel include:
 
@@ -147,7 +146,7 @@ Security limitations documented by Intel include:
   to reprogram the functionality of machine code.
 
 
-## Attack Surface
+### Attack Surface
 
 In addition to the intrinsic security limitations of SGX documented by
 Intel, attackers could compromise the security of an SGX-based application
@@ -175,7 +174,7 @@ Overall, the daunting complexity of SGX raises doubts about its security.
 Alas (or fortunately?), many potential bugs can only be detected in a
 black-box fashion, as the code (microcode, hardware) isn't available.
 
-## Recovery
+### Recovery
 
 To recover from bugs in the microcode implementation of its assembly
 instructions, SGX microcode can be patched. However, SGX components 
@@ -188,7 +187,7 @@ mechanisms are in place to ensure that a given attestation will no
 longer be valid.
 
 
-# How Strong is SGX Cryptography?
+## How Strong is SGX Cryptography?
 
 SGX uses cryptography everywhere, be it to sign an enclave, to seal
 encrypted data off the enclave, or within the intricate remote
@@ -197,7 +196,7 @@ providing a cryptography library to enclave authors. But how secure are
 these algorithms and their implementations? 
 
 
-## Random Generation in SGX
+### Random Generation in SGX
 
 Strong randomness is essential to any system doing cryptographic
 operations. A common mistake in C(++) is to use libc's `rand()` to
@@ -232,7 +231,7 @@ Still, there are caveats with SGX' PRNG:
   program from using randomness.
 
 
-## Standard Crypto Algorithms
+### Standard Crypto Algorithms
 
 SGX uses many different cryptographic algorithms, including:
 
@@ -271,7 +270,7 @@ implementation without native instructions, yet also with cache-timing
 mitigations.
 
 
-## Custom Crypto Algorithms
+### Custom Crypto Algorithms
 
 Due to the specific functional and security requirements of SGX, Intel
 designed custom cryptographic schemes. Perhaps the two most critical are 
@@ -310,7 +309,7 @@ Nonetheless, suboptimal properties are a relatively short RSA key, the
 lack of forward secrecy, and the leak of a hash of the symmetric key
 that simplifies time-memory tradeoff attacks. 
 
-## EPID Anonymous Group Signatures
+### EPID Anonymous Group Signatures
 
 A unique feature of SGX cryptography is its use of an *anonymous group
 signature* scheme called enhanced privacy ID (EPID). Although EPID is
@@ -441,48 +440,10 @@ the lines of the fast pairing implementation described in the paper at
 http://eprint.iacr.org/2010/354.
 
 
-# Software Released
-
-At Black Hat we're releasing two software projects 
-
-* **Proxy reencryption enclave**: This proof of concept showcases an
-  SGX-based application that receives data encrypted under some key K1
-  and securely transforms it to the same data encrypted with some key
-  K2, where the keys are securely stored by the SGX-enabled CPU and
-  subject to predefined permissions. Symmetric key-based systems can use
-  this to avoid complex key management processes and technologies, and
-  to avoid having to trust operating systems and human operators. 
-  The source code of this project is available at 
-  https://github.com/kudelskisecurity/sgx-reencrypt.
-
-* **Metadata extraction tools**: We wrote Python scripts to parse
-  documented structures of SGX binaries, such as enclave files or
-  attestation quotes. These are available at
-  https://github.com/kudelskisecurity/sgxfun.
-
-
-# Acknowledgments
+## Acknowledgments
 
 We are grateful for their help and feedback to Victor Costan (MIT), Shay
 Gueron (Intel), Simon Johnson (Intel), Samuel Neves (University of
 Coimbra), Joanna Rutkowska (Invisible Things Lab), Arrigo Triulzi, Dan
 Zimmerman (Intel).
-
-# Biographies
-
-**Jean-Philippe (JP) Aumasson** is Principal Cryptographer at Kudelski
-Security, in Switzerland. He designed the popular cryptographic
-functions BLAKE2 and SipHash, and the new authenticated cipher NORX. He
-gave talks at Black Hat, DEFCON, RSA, CCC, SyScan, Troopers. He
-initiated the Crypto Coding Standard and the Password Hashing
-Competition projects, and co-wrote the 2015 book "The Hash Function
-BLAKE". JP tweets as @veorq.
-
-**Luis Merino** is Senior Security Engineer at Kudelski Security,
-Switzerland working on research projects. In the past, he has been
-involved in engineering and research projects at Riscure, the Andalusian
-Astrophysics Institute, and the University of Granada, amongst others.
-He graduated in computer engineering at University of Granada and is
-Offensive Security certified. Luis tweets as @iamcorso.
-
 
