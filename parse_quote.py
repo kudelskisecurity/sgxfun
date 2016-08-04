@@ -138,10 +138,13 @@ if __name__ == "__main__":
 
     print(r)
 
-    debug = ord(attributes[0])>>1&1 == 1
-    mode64bit = ord(attributes[0])>>2&1 == 1
-    provisionkey = ord(attributes[0])>>4&1 == 1
-    einittokenkey = ord(attributes[0])>>5&1 == 1
+    attrbyte = attributes[0]
+    if not isinstance(attrbyte, int):
+        attrbyte = ord(attrbyte)
+    debug = attrbyte>>1&1 == 1
+    mode64bit = attrbyte>>2&1 == 1
+    provisionkey = attrbyte>>4&1 == 1
+    einittokenkey = attrbyte>>5&1 == 1
     attr =  '%20s\n' % ('ATTRIBUTES') +\
             '%20s\t%s\n' % ('debug', debug) +\
             '%20s\t%s\n' % ('mode64bit', mode64bit) +\

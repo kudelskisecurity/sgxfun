@@ -20,7 +20,15 @@ from binascii import hexlify
 from struct import unpack
 import sys
 
-from elftools.elf.elffile import ELFFile
+if sys.version_info[0] != 0:
+    print('sorry, parse_enclave.py does not support Python 3 yet :(')
+    sys.exit(1)
+
+try:
+    from elftools.elf.elffile import ELFFile
+except:
+    print('elftools needed! try: pip install pyelftools')
+    sys.exit(1)
 
 
 def rsa_check(n, s, q1, q2):
@@ -63,8 +71,8 @@ class Parser(object):
         return None
 
     def find_weak_sigstruct_header(self):
-        sigstruct_header = "\x06\x00\x00\x00\xe1\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x80"
-        sigstruct_header2 = "\x01\x01\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x01\x00\x00\x00"
+        sigstruct_header = b"\x06\x00\x00\x00\xe1\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x80"
+        sigstruct_header2 = b"\x01\x01\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x01\x00\x00\x00"
         # find the first header
         pos = self.blob.find(sigstruct_header)
         if pos != -1:
@@ -439,10 +447,10 @@ if __name__ == "__main__":
     sigstruct = p.sigstruct(sigstruct_pos)
     # print sigstruct
     for k, v in sigstruct:
-        if isinstance(v, (long, int)):
-            print("%20s\t%d" % (k.upper(), v))
-        else:
+        if isinstance(v, (bytes)):
             print("%20s\t%s" % (k.upper(), hexlify(v)))
+        else:
+            print("%20s\t%d" % (k.upper(), v))
 
     print('\n')
     print('# ATTRIBUTES\n')
@@ -468,13 +476,6 @@ if __name__ == "__main__":
 
     # locating ECALLs table
     epos = p.find_ecall_table()
-    # we have to deal with VA relocations, so we'll hardcode
-    # here the Launch Enclave (le.signed.dll) physical address
-    # for the ECALLs table:
-    #
-    #   va = 0x180067080
-    #   .rdata vaddr=0x180066000 paddr=0x000064a00
-    #   epos = 0x180067080-0x180066000+0x64a00
     if epos:
         print('\n# ECALLs table found at 0x%x' % epos)
         necalls, = unpack("<I", p.blob[epos:epos+4])

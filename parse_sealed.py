@@ -100,7 +100,7 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'rb') as f:
         data = f.read()
 
-    print 'length: %d bytes' % len(data)
+    print('length: %d bytes' % len(data))
     # Parse sgx_sealed_data_t
     sealed_data = SealedData(data)
     # parse sgx_key_request_t
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # Parse sgx_aes_gcm_data_t
     aesgcm_data = AESGCMData(sealed_data.aes_data)
 
-    print '\n### key request ###\n' \
+    print('\n### key request ###\n' \
         '%20s\t%d (%s)\n' % ('key_request', key_request.key_name,
                      KEY_NAME[key_request.key_name]) +\
         '%20s\t%d (%s)\n' % ('key_policy', key_request.key_policy,
@@ -123,4 +123,4 @@ if __name__ == '__main__':
         '%20s\t%d bytes\n' % ('aad length', aesgcm_data.payload_size - sealed_data.plain_text_offset) +\
         '%20s\t%s\n' % ('tag', hexlify(aesgcm_data.payload_tag)) +\
         '%20s\t%s\n' % ('ciphertext', hexlify(aesgcm_data.payload[:sealed_data.plain_text_offset])) +\
-        '%20s\t%s\n' % ('aad', hexlify(aesgcm_data.payload[sealed_data.plain_text_offset:]))
+        '%20s\t%s\n' % ('aad', hexlify(aesgcm_data.payload[sealed_data.plain_text_offset:])))
