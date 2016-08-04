@@ -79,14 +79,45 @@ reveals to entry points at Virtual Addresses 0x0670 and 0x0d20.
 These entry points can serve as the beginning of a reverse engineering
 session.
 
-# Extracting information from a quote
 
- * Can be intercepted at network level
+## Extracting information from a quote
 
- * Provides information about the running enclave and the security
-   level of the platform (cpusvn, isvsvn, debug mode).
+Usage: `./parse_quote.py <quote.bin>`
 
-## Intellectual property
+Quotes are sent from the enclave to the software vendor server while
+the remote attestation process. Together with the signature, they
+include a report of the enclave running.
+
+When intercepted, they can provide information about what enclave is
+running, which key was used to sign it or wether they are running in
+debug mode or not. They also carry the security revisions of the
+platform (CPUSVN and ISVSVN).
+
+## Extracting information from a sealed blob
+
+Usage: `./parse_sealed.py <sealed.bin>`
+
+### Sealing policy
+
+The policy used to derive the sealing key determines which enclaves
+will be able to decrypt the blob. Two possible values:
+
+  * MRENCLAVE: The key derivation function includes the hash of the
+    enclave, and only the enclave who performed the operation,
+    running on the same machine and signed by the same signer, can
+    unseal it.
+
+  * MRSIGNER: The key derivation function does not includes the hash
+    of the enclave. Other enclaves, running on the same machine and
+    signed by the same signer, can unseal it.
+
+
+### Additional authenticated data
+
+Sealed blobs can carry additional authenticated data, that is not
+encrypted but only authenticated. This piece of data can reveal useful
+information regarding the sealed blob.
+
 
 Copyright (c) 2016, Nagravision S.A.
 
