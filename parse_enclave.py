@@ -20,7 +20,7 @@ from binascii import hexlify
 from struct import unpack
 import sys
 
-if sys.version_info[0] != 0:
+if sys.version_info[0] != 2:
     print('sorry, parse_enclave.py does not support Python 3 yet :(')
     sys.exit(1)
 
